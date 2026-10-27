@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Astro Studio — Visual Builder</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand"><div class="brand-mark">A</div><div><strong>Astro Studio</strong><small>Visual site builder</small></div></div>
+    <div class="project-name"><span class="status-dot"></span><span>Acme Studio</span><span class="slash">/</span><strong>Home</strong><span class="chevron">⌄</span></div>
+    <div class="top-actions">
+      <button class="icon-button" title="Undo" id="undoBtn">↶</button>
+      <button class="icon-button" title="Redo" id="redoBtn">↷</button>
+      <span class="divider"></span>
+      <button class="device active" data-device="desktop" title="Desktop">▰</button>
+      <button class="device" data-device="tablet" title="Tablet">▯</button>
+      <button class="device" data-device="mobile" title="Mobile">▯</button>
+      <span class="divider"></span>
+      <button class="button ghost" id="previewBtn">Preview ↗</button>
+      <button class="button primary" id="exportBtn">Export Astro <span>↗</span></button>
+    </div>
+  </header>
+
+  <main class="app">
+    <aside class="left-panel">
+      <div class="panel-tabs">
+        <button class="tab active" data-tab="add">＋ Add</button>
+        <button class="tab" data-tab="layers">☷ Layers</button>
+        <button class="tab" data-tab="pages">▤ Pages</button>
+        <button class="tab" data-tab="templates">▧ Templates</button>
+      </div>
+      <section class="tab-content" id="addPanel">
+        <div class="panel-heading"><div><h2>Add elements</h2><p>Build your page section by section.</p></div></div>
+        <label class="search"><span>⌕</span><input id="componentSearch" placeholder="Search components..."></label>
+        <div class="category-label">SECTIONS</div>
+        <div class="component-grid">
+          <button class="component-card" data-component="hero"><span class="component-icon purple">▤</span><strong>Hero</strong><small>Headline + CTA</small></button>
+          <button class="component-card" data-component="features"><span class="component-icon blue">▦</span><strong>Features</strong><small>Feature grid</small></button>
+          <button class="component-card" data-component="logos"><span class="component-icon orange">◎</span><strong>Logo cloud</strong><small>Social proof</small></button>
+          <button class="component-card" data-component="testimonials"><span class="component-icon pink">❞</span><strong>Testimonials</strong><small>Customer quotes</small></button>
+          <button class="component-card" data-component="pricing"><span class="component-icon green">＄</span><strong>Pricing</strong><small>Plans & pricing</small></button>
+          <button class="component-card" data-component="cta"><span class="component-icon yellow">↗</span><strong>Call to action</strong><small>Conversion block</small></button>
+          <button class="component-card" data-component="text"><span class="component-icon gray">T</span><strong>Text block</strong><small>Rich content</small></button>
+          <button class="component-card" data-component="footer"><span class="component-icon navy">▱</span><strong>Footer</strong><small>Links & details</small></button>
+        </div>
+        <div class="tip"><span>✦</span><div><strong>Quick tip</strong><p>Right-click any section on the canvas for more actions.</p></div></div>
+      </section>
+      <section class="tab-content hidden" id="layersPanel">
+        <div class="panel-heading"><div><h2>Page layers</h2><p>Drag to reorder your sections.</p></div><button class="mini-button" id="addLayerBtn">＋</button></div>
+        <div id="layerList" class="layer-list"></div>
+      </section>
+      <section class="tab-content hidden" id="pagesPanel">
+        <div class="panel-heading"><div><h2>Pages</h2><p>Manage your website pages.</p></div><button class="mini-button" id="newPageBtn">＋</button></div>
+        <div id="pagesList" class="pages-list" aria-label="Website pages"></div>
+        <div class="tip"><span>↗</span><div><strong>Astro routes</strong><p>Each page will become a route in your generated Astro project.</p></div></div>
+      </section>
+      <section class="tab-content hidden" id="templatesPanel">
+        <div class="panel-heading"><div><h2>Homepage templates</h2><p>Choose a starting layout for Home.</p></div></div>
+        <div class="template-notice"><strong>Home page only</strong><span>Applying a template replaces the current Home layout. Other pages stay unchanged.</span></div>
+        <div class="template-list">
+          <article class="template-card"><div class="template-preview preview-portfolio"><div class="preview-nav"></div><div class="preview-split"><i></i><b></b></div><div class="preview-cards"><i></i><i></i><i></i></div></div><div class="template-card-info"><div><strong>Studio Portfolio</strong><small>Editorial hero · project gallery</small></div><button class="apply-template" data-template="portfolio">Apply</button></div></article>
+          <article class="template-card"><div class="template-preview preview-startup"><div class="preview-nav"></div><div class="preview-darkhero"><i></i><b></b></div><div class="preview-stats"><i></i><i></i><i></i></div></div><div class="template-card-info"><div><strong>Bold Startup</strong><small>Dark hero · metrics · pricing</small></div><button class="apply-template" data-template="startup">Apply</button></div></article>
+          <article class="template-card"><div class="template-preview preview-minimal"><div class="preview-nav"></div><div class="preview-center"><i></i><b></b><em></em></div><div class="preview-lines"><i></i><i></i><i></i></div></div><div class="template-card-info"><div><strong>Minimal Agency</strong><small>Clean hero · service list</small></div><button class="apply-template" data-template="minimal">Apply</button></div></article>
+        </div>
+        <div class="tip"><span>✦</span><div><strong>Template library</strong><p>Templates are editable after applying. Rearrange or replace any section.</p></div></div>
+      </section>
+    </aside>
+
+    <section class="workspace">
+      <div class="canvas-toolbar">
+        <div class="breadcrumb"><span>Pages</span><span>›</span><strong>Home</strong></div>
+        <div class="canvas-meta"><span class="live-dot"></span><span id="sectionCount">5 sections</span><span class="meta-sep">·</span><span>Saved locally</span></div>
+      </div>
+      <div class="canvas-scroll" id="canvasScroll">
+        <div class="site-canvas desktop" id="siteCanvas" aria-label="Website canvas">
+          <div class="site-topline"><span class="tiny-logo">A</span><strong>Acme</strong><nav><a>Product</a><a>Solutions</a><a>Resources</a><a>Pricing</a></nav><button class="site-nav-cta">Get started <span>↗</span></button></div>
+          <div class="editable-section" data-section="hero" tabindex="0">
+            <div class="section-tools"><span class="drag-handle" title="Drag to reorder">⠿</span><span class="section-label">HERO</span><button class="more-btn" aria-label="Section actions">•••</button></div>
+            <div class="hero-content"><div class="eyebrow"><span>✦</span> INTRODUCING ACME 2.0</div><h1>Build something<br><em>remarkable.</em></h1><p>The all-in-one platform to help your team move faster, create better experiences, and do your best work.</p><div class="hero-buttons"><button class="primary-pill">Start building <span>↗</span></button><button class="text-pill">Explore features <span>→</span></button></div><div class="hero-note"><span class="avatar-stack"><i>A</i><i>M</i><i>J</i></span><span><strong>2,400+ teams</strong><small>building with Acme</small></span></div></div>
+            <div class="hero-art"><div class="orbit orbit-one"></div><div class="orbit orbit-two"></div><div class="float-card card-one"><span class="card-dot"></span><div><small>Weekly growth</small><strong>+28.4%</strong></div><span class="sparkline">⌁</span></div><div class="dashboard-card"><div class="dash-head"><span>Workspace overview</span><span>•••</span></div><div class="dash-stat"><strong>$48,290</strong><span>↗ 12.8%</span></div><div class="bars"><i style="height:30%"></i><i style="height:45%"></i><i style="height:36%"></i><i style="height:65%"></i><i style="height:52%"></i><i style="height:80%"></i><i style="height:70%"></i><i style="height:95%"></i><i style="height:62%"></i><i style="height:85%"></i></div><div class="dash-foot"><span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span></div></div><div class="float-card card-two"><span class="check-badge">✓</span><div><small>Project status</small><strong>All systems go</strong></div></div></div>
+          </div>
+          <div class="editable-section logo-section" data-section="logos" tabindex="0">
+            <div class="section-tools"><span class="drag-handle">⠿</span><span class="section-label">LOGO CLOUD</span><button class="more-btn" aria-label="Section actions">•••</button></div>
+            <p>POWERING TEAMS AT THE WORLD'S BEST COMPANIES</p><div class="logo-row"><strong>◈ layers</strong><strong>◉ circooles</strong><strong>◒ catalog</strong><strong>✳ quotient</strong><strong>◈ sisyphus</strong></div>
+          </div>
+          <div class="editable-section features-section" data-section="features" tabindex="0">
+            <div class="section-tools"><span class="drag-handle">⠿</span><span class="section-label">FEATURES</span><button class="more-btn" aria-label="Section actions">•••</button></div>
+            <div class="section-intro"><span class="eyebrow">MADE FOR YOUR MOMENTUM</span><h2>Everything you need to<br><em>do your best work.</em></h2><p>Powerful tools, thoughtfully connected, so you can focus on what matters most.</p></div>
+            <div class="feature-grid"><article><span class="feature-icon purple">✦</span><h3>Move at your speed</h3><p>Go from idea to impact with workflows that keep your team in sync.</p><a>Explore workflows →</a></article><article><span class="feature-icon blue">◈</span><h3>Clarity in every detail</h3><p>Turn complex work into clear next steps everyone can rally around.</p><a>See how it works →</a></article><article><span class="feature-icon orange">⌁</span><h3>Built to scale with you</h3><p>Flexible foundations that grow with your team and your ambition.</p><a>Discover the platform →</a></article></div>
+          </div>
+          <div class="editable-section testimonial-section" data-section="testimonials" tabindex="0">
+            <div class="section-tools"><span class="drag-handle">⠿</span><span class="section-label">TESTIMONIALS</span><button class="more-btn" aria-label="Section actions">•••</button></div>
+            <div class="quote-mark">“</div><blockquote>Acme has completely changed how we work together. We spend less time managing work and more time making work we're proud of.</blockquote><div class="quote-person"><div class="person-avatar">SC</div><div><strong>Sarah Chen</strong><small>VP of Design, Layers</small></div></div>
+          </div>
+          <div class="editable-section cta-section" data-section="cta" tabindex="0">
+            <div class="section-tools"><span class="drag-handle">⠿</span><span class="section-label">CALL TO ACTION</span><button class="more-btn" aria-label="Section actions">•••</button></div>
+            <div><span class="eyebrow">YOUR NEXT CHAPTER STARTS HERE</span><h2>Ready to make<br><em>something great?</em></h2><p>Join thousands of teams building better, together.</p><button class="primary-pill">Get started for free <span>↗</span></button></div><div class="cta-decoration">✳</div>
+          </div>
+          <div class="editable-section footer-section" data-section="footer" tabindex="0">
+            <div class="section-tools"><span class="drag-handle">⠿</span><span class="section-label">FOOTER</span><button class="more-btn" aria-label="Section actions">•••</button></div>
+            <div class="footer-main"><div class="footer-brand"><span class="tiny-logo">A</span><strong>Acme</strong><p>Make good things happen.</p></div><div><strong>Product</strong><a>Features</a><a>Integrations</a><a>Changelog</a></div><div><strong>Company</strong><a>About us</a><a>Careers</a><a>Contact</a></div><div><strong>Resources</strong><a>Blog</a><a>Help center</a><a>Community</a></div></div><div class="footer-bottom">© 2025 Acme Studio <span>Privacy · Terms · Status</span></div>
+          </div>
+        </div>
+      </div>
+      <div class="canvas-bottom"><span>⌘ K <span>Quick actions</span></span><span>Drag sections using <b>⠿</b> or right-click for actions</span><span id="canvasSize">1440 × Auto</span></div>
+    </section>
+
+    <aside class="right-panel">
+      <div class="right-heading"><div><h2>Properties</h2><p id="selectedName">Hero section</p></div><span class="sliders">☷</span></div>
+      <div id="emptyProperties" class="empty-properties hidden"><div class="empty-icon">↖</div><strong>Select a section</strong><p>Click any section on the canvas to edit its properties.</p></div>
+      <div id="propertiesContent">
+        <div class="property-group"><div class="property-title">CONTENT <button>⌄</button></div><label class="field-label">Section label</label><input class="text-input" id="labelInput" value="HERO"><label class="field-label">Heading</label><textarea class="text-input heading-input" id="headingInput" rows="3">Build something remarkable.</textarea><label class="field-label">Description</label><textarea class="text-input" id="descriptionInput" rows="3">The all-in-one platform to help your team move faster, create better experiences, and do your best work.</textarea></div>
+        <div class="property-group"><div class="property-title">LAYOUT <button>⌄</button></div><label class="field-label">Content alignment</label><div class="segmented"><button class="active">Left</button><button>Center</button><button>Right</button></div><label class="field-label">Section spacing</label><div class="range-row"><input id="spacingRange" type="range" min="32" max="120" value="72"><output id="spacingOutput">72 px</output></div></div>
+        <div class="property-group"><div class="property-title">APPEARANCE <button>⌄</button></div><label class="field-label">Background</label><div class="color-row"><span class="color-swatch"></span><input id="bgColor" class="text-input" value="#F8F8FC"><button class="eyedrop">◉</button></div><label class="field-label">Border radius</label><div class="segmented"><button>None</button><button class="active">Small</button><button>Large</button></div></div>
+        <div class="property-group"><div class="property-title">ADVANCED <button>⌄</button></div><label class="field-label">CSS class</label><input class="text-input" placeholder="e.g. hero-section"><label class="field-label">Element ID</label><input class="text-input" placeholder="e.g. home-hero"></div>
+        <div class="danger-zone"><button id="deleteSelectedBtn">⌫ Delete section</button></div>
+      </div>
+    </aside>
+  </main>
+
+  <div id="contextMenu" class="context-menu hidden" role="menu">
+    <button data-action="edit"><span>✎</span> Edit section <kbd>↵</kbd></button>
+    <button data-action="duplicate"><span>▣</span> Duplicate section <kbd>⌘ D</kbd></button>
+    <button data-action="moveUp"><span>↑</span> Move up</button>
+    <button data-action="moveDown"><span>↓</span> Move down</button>
+    <div class="menu-divider"></div>
+    <button data-action="copy"><span>▢</span> Copy section</button>
+    <button data-action="paste"><span>▤</span> Paste section</button>
+    <div class="menu-divider"></div>
+    <button class="danger-item" data-action="delete"><span>⌫</span> Delete section <kbd>⌫</kbd></button>
+  </div>
+  <div id="toast" class="toast"></div>
+  <div id="previewOverlay" class="preview-overlay hidden"><div class="preview-top"><strong>Live preview</strong><button id="closePreview">✕ Close preview</button></div><div class="preview-content" id="previewContent"></div></div>
+  <script src="app.js"></script>
+</body>
+</html>
