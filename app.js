@@ -19,8 +19,8 @@
   let pages = [];
   let activePageId = 'home';
   let pageIdCounter = 1;
-  const names = {hero:'Hero section',logos:'Logo cloud',features:'Features section',testimonials:'Testimonials',pricing:'Pricing section',cta:'Call to action',text:'Text block',footer:'Footer'};
-  const icons = {hero:'▤',logos:'◎',features:'▦',testimonials:'❞',pricing:'＄',cta:'↗',text:'T',footer:'▱'};
+  const names = {hero:'Hero section',logos:'Logo cloud',features:'Features section',testimonials:'Testimonials',pricing:'Pricing section',cta:'Call to action',text:'Text block',footer:'Footer',stats:'Stats',team:'Team',faq:'FAQ',newsletter:'Newsletter'};
+  const icons = {hero:'▤',logos:'◎',features:'▦',testimonials:'❞',pricing:'＄',cta:'↗',text:'T',footer:'▱',stats:'↗',team:'♙',faq:'?',newsletter:'✉'};
   const sectionTemplates = {
     pricing: `<div class="section-intro"><span class="eyebrow">SIMPLE, TRANSPARENT PRICING</span><h2>Plans that grow<br><em>with your team.</em></h2><p>Choose the right plan for your next big idea.</p></div><div class="feature-grid"><article><h3>Starter</h3><p>For small teams getting started.</p><h2>$19 <small>/ month</small></h2><a>Choose Starter →</a></article><article><h3>Growth</h3><p>For teams ready to scale.</p><h2>$49 <small>/ month</small></h2><a>Choose Growth →</a></article><article><h3>Business</h3><p>For organizations moving fast.</p><h2>$99 <small>/ month</small></h2><a>Choose Business →</a></article></div>`,
     text: `<div class="section-intro"><span class="eyebrow">A LITTLE ABOUT US</span><h2>Good work starts<br><em>with a clear idea.</em></h2><p>Use this section to tell your story. Explain what you do, who you help, and why it matters. Keep it clear, useful, and human.</p></div>`,
@@ -29,7 +29,11 @@
     logos: `<p>TRUSTED BY TEAMS EVERYWHERE</p><div class="logo-row"><strong>◈ layers</strong><strong>◉ circooles</strong><strong>◒ catalog</strong><strong>✳ quotient</strong><strong>◈ sisyphus</strong></div>`,
     testimonials: `<div class="quote-mark">“</div><blockquote>“This team makes it easier to turn ambitious ideas into real results. We couldn't imagine working without it.”</blockquote><div class="quote-person"><div class="person-avatar">JD</div><div><strong>Jordan Davis</strong><small>Founder, Studio North</small></div></div>`,
     cta: `<div><span class="eyebrow">LET'S BUILD SOMETHING</span><h2>Good things are<br><em>just getting started.</em></h2><p>Take the next step with us today.</p><button class="primary-pill">Get started <span>↗</span></button></div><div class="cta-decoration">✳</div>`,
-    footer: `<div class="footer-main"><div class="footer-brand"><span class="tiny-logo">A</span><strong>Acme</strong><p>Make good things happen.</p></div><div><strong>Product</strong><a>Features</a><a>Integrations</a><a>Changelog</a></div><div><strong>Company</strong><a>About us</a><a>Careers</a><a>Contact</a></div><div><strong>Resources</strong><a>Blog</a><a>Help center</a><a>Community</a></div></div><div class="footer-bottom">© 2025 Acme Studio <span>Privacy · Terms · Status</span></div>`
+    footer: `<div class="footer-main"><div class="footer-brand"><span class="tiny-logo">A</span><strong>Acme</strong><p>Make good things happen.</p></div><div><strong>Product</strong><a>Features</a><a>Integrations</a><a>Changelog</a></div><div><strong>Company</strong><a>About us</a><a>Careers</a><a>Contact</a></div><div><strong>Resources</strong><a>Blog</a><a>Help center</a><a>Community</a></div></div><div class="footer-bottom">© 2025 Acme Studio <span>Privacy · Terms · Status</span></div>`,
+    stats: `<div class="section-intro"><span class="eyebrow">OUR IMPACT</span><h2>Progress you can<br><em>measure.</em></h2></div><div class="stats-grid"><article><strong>2.4k</strong><span>Teams growing with us</span></article><article><strong>98%</strong><span>Customer satisfaction</span></article><article><strong>42</strong><span>Countries represented</span></article><article><strong>24/7</strong><span>Support when it matters</span></article></div>`,
+    team: `<div class="section-intro"><span class="eyebrow">THE PEOPLE BEHIND THE WORK</span><h2>Built by a thoughtful<br><em>team.</em></h2><p>Different perspectives, shared care for doing great work.</p></div><div class="team-grid"><article><span class="team-avatar">AM</span><h3>Avery Morgan</h3><p>Creative Director</p></article><article><span class="team-avatar peach">JL</span><h3>Jordan Lee</h3><p>Product Designer</p></article><article><span class="team-avatar mint">RS</span><h3>Riley Shah</h3><p>Engineering Lead</p></article></div>`,
+    faq: `<div class="section-intro"><span class="eyebrow">QUESTIONS, ANSWERED</span><h2>Everything you need<br><em>to know.</em></h2></div><div class="faq-list"><details open><summary>How quickly can I get started?<span>+</span></summary><p>Create your workspace in minutes, then invite your team when you are ready.</p></details><details><summary>Can I change plans later?<span>+</span></summary><p>Yes. Move between plans whenever your needs change.</p></details><details><summary>Is there a free trial?<span>+</span></summary><p>Every plan includes time to explore the product before you commit.</p></details></div>`,
+    newsletter: `<div class="newsletter-copy"><span class="eyebrow">STAY IN THE LOOP</span><h2>Useful ideas, once<br><em>a month.</em></h2><p>Thoughtful notes on building better products and teams.</p></div><form class="newsletter-form"><input type="email" placeholder="Your email address" aria-label="Email address"><button type="button" class="primary-pill">Subscribe <span>↗</span></button><small>No spam. Unsubscribe anytime.</small></form>`
   };
   function showToast(message) {
     toast.textContent = message; toast.classList.add('show');
@@ -47,12 +51,16 @@
       section.innerHTML = `<div class="section-tools"><span class="drag-handle" title="Drag to reorder">⠿</span><span class="section-label">${type.toUpperCase()}</span><button class="more-btn" aria-label="Section actions">•••</button></div>${content}`;
     }
     section.dataset.section = type; section.classList.remove('selected');
-    section.classList.remove('logo-section','features-section','testimonial-section','cta-section','footer-section');
+    section.classList.remove('logo-section','features-section','testimonial-section','cta-section','footer-section','stats-section','team-section','faq-section','newsletter-section');
     if(type==='logos') section.classList.add('logo-section');
     if(['features','pricing','text'].includes(type)) section.classList.add('features-section');
     if(type==='testimonials') section.classList.add('testimonial-section');
     if(type==='cta') section.classList.add('cta-section');
     if(type==='footer') section.classList.add('footer-section');
+    if(type==='stats') section.classList.add('stats-section');
+    if(type==='team') section.classList.add('team-section');
+    if(type==='faq') section.classList.add('faq-section');
+    if(type==='newsletter') section.classList.add('newsletter-section');
     const label = section.querySelector('.section-label'); if(label) label.textContent = type.toUpperCase();
     return section;
   }
@@ -331,6 +339,10 @@
     if(type==='testimonials') section.classList.add('testimonial-section');
     if(type==='cta') section.classList.add('cta-section');
     if(type==='footer') section.classList.add('footer-section');
+    if(type==='stats') section.classList.add('stats-section');
+    if(type==='team') section.classList.add('team-section');
+    if(type==='faq') section.classList.add('faq-section');
+    if(type==='newsletter') section.classList.add('newsletter-section');
     canvas.appendChild(section); bindSections(); selectSection(section); updateCount(); section.scrollIntoView({behavior:'smooth',block:'center'}); showToast(`${names[type]||type} added`);
   }));
   document.getElementById('componentSearch').addEventListener('input',e=>{
