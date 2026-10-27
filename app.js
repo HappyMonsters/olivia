@@ -10,6 +10,8 @@
   const spacingRange = document.getElementById('spacingRange');
   const spacingOutput = document.getElementById('spacingOutput');
   const bgColor = document.getElementById('bgColor');
+  const bgColorPicker = document.getElementById('bgColorPicker');
+  const borderRadiusControl = document.getElementById('borderRadiusControl');
   const propertiesContent = document.getElementById('propertiesContent');
   const emptyProperties = document.getElementById('emptyProperties');
   let selected = null, contextTarget = null, copiedSection = null, dragSource = null;
@@ -186,7 +188,22 @@
     headingInput.value = h ? h.innerText.replace(/\n/g,' ') : '';
     descriptionInput.value = p ? p.innerText : '';
     const bg = getComputedStyle(selected).backgroundColor;
-    if (bg && bg.startsWith('rgb')) { const m = bg.match(/\d+/g); if (m) bgColor.value='#'+m.slice(0,3).map(n=>Number(n).toString(16).padStart(2,'0')).join('').toUpperCase(); }
+    if (bg && bg.startsWith('rgb')) { const m = bg.match(/\d+/g); if (m) setBackgroundControls('#'+m.slice(0,3).map(n=>Number(n).toString(16).padStart(2,'0')).join('').toUpperCase()); }
+    const radius = parseFloat(getComputedStyle(selected).borderTopLeftRadius) || 0;
+    setRadiusControl(radius);
+  }
+  function setBackgroundControls(color) {
+    bgColor.value = color; bgColorPicker.value = color;
+    document.querySelector('.color-swatch').style.backgroundColor = color;
+  }
+  function setRadiusControl(radius) {
+    const selectedRadius = radius >= 18 ? 24 : radius >= 6 ? 12 : 0;
+    borderRadiusControl.querySelectorAll('button').forEach(button => button.classList.toggle('active', Number(button.dataset.radius) === selectedRadius));
+  }
+  function applyBackground(color) {
+    if (!selected) return;
+    if (!/^#[0-9a-f]{6}$/i.test(color)) { showToast('Enter a valid hex color'); updateProperties(); return; }
+    saveHistory(); selected.style.backgroundColor = color; setBackgroundControls(color.toUpperCase());
   }
   function setSectionLabel(section, text) {
     let tag=section.querySelector('.section-label');
@@ -325,7 +342,13 @@
   descriptionInput.addEventListener('change',()=>{if(selected){saveHistory();const p=selected.querySelector('.hero-content > p,.section-intro > p,.cta-section p,.testimonial-section blockquote,.logo-section > p');if(p)p.textContent=descriptionInput.value;}});
   spacingRange.addEventListener('input',()=>{spacingOutput.value=spacingRange.value+' px';if(selected){selected.style.paddingTop=spacingRange.value+'px';selected.style.paddingBottom=spacingRange.value+'px';}});
   spacingRange.addEventListener('change',()=>{if(selected)saveHistory();});
-  bgColor.addEventListener('change',()=>{if(!selected)return; if(/^#[0-9a-f]{6}$/i.test(bgColor.value)){saveHistory();selected.style.backgroundColor=bgColor.value;document.querySelector('.color-swatch').style.background=bgColor.value;}else showToast('Enter a valid hex color');});
+  bgColor.addEventListener('change',()=>applyBackground(bgColor.value));
+  bgColorPicker.addEventListener('change',()=>applyBackground(bgColorPicker.value));
+  document.getElementById('openColorPicker').addEventListener('click',()=>bgColorPicker.click());
+  borderRadiusControl.addEventListener('click',event=>{
+    const button = event.target.closest('button[data-radius]'); if (!button || !selected) return;
+    saveHistory(); const radius = Number(button.dataset.radius); selected.style.borderRadius = radius+'px'; setRadiusControl(radius);
+  });
   document.getElementById('deleteSelectedBtn').addEventListener('click',()=>deleteSection(selected));
   document.getElementById('addLayerBtn').addEventListener('click',()=>document.querySelector('[data-tab="add"]').click());
   document.getElementById('newPageBtn').addEventListener('click',()=>{
