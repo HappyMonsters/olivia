@@ -237,8 +237,8 @@
     propertiesContent.classList.remove('hidden'); emptyProperties.classList.add('hidden');
     const type = selected.dataset.section; selectedName.textContent = names[type] || type;
     labelInput.value = (selected.querySelector('.section-label')?.textContent || type.toUpperCase()).trim();
-    const h = selected.querySelector('h1,h2,h3');
-    const p = selected.querySelector('.hero-content > p,.section-intro > p,.cta-section p,.testimonial-section blockquote,.logo-section > p');
+    const h = selected.querySelector('h1,h2,h3') || selected.querySelector('.footer-brand strong');
+    const p = selected.querySelector('.hero-content > p,.section-intro > p,.cta-section p,.testimonial-section blockquote,.logo-section > p,.footer-brand p');
     headingInput.value = h ? h.innerText.replace(/\n/g,' ') : '';
     descriptionInput.value = p ? p.innerText : '';
     const bg = getComputedStyle(selected).backgroundColor;
@@ -280,7 +280,8 @@
     tag.textContent=text.toUpperCase();
   }
   function replaceHeading(section, value) {
-    const h=section.querySelector('h1,h2,h3'); if (!h) return;
+    const h=section.querySelector('h1,h2,h3') || section.querySelector('.footer-brand strong'); if (!h) return;
+    if (section.dataset.section === 'footer') { h.textContent=value; return; }
     const em=h.querySelector('em');
     if (em && value.includes(' ')) {
       const words=value.trim().split(/\s+/); const pivot=Math.max(1,Math.ceil(words.length/2));
@@ -419,7 +420,7 @@
   });
   labelInput.addEventListener('change',()=>{if(selected){saveHistory();setSectionLabel(selected,labelInput.value);renderLayers();}});
   headingInput.addEventListener('change',()=>{if(selected){saveHistory();replaceHeading(selected,headingInput.value);}});
-  descriptionInput.addEventListener('change',()=>{if(selected){saveHistory();const p=selected.querySelector('.hero-content > p,.section-intro > p,.cta-section p,.testimonial-section blockquote,.logo-section > p');if(p)p.textContent=descriptionInput.value;}});
+  descriptionInput.addEventListener('change',()=>{if(selected){saveHistory();const p=selected.querySelector('.hero-content > p,.section-intro > p,.cta-section p,.testimonial-section blockquote,.logo-section > p,.footer-brand p');if(p)p.textContent=descriptionInput.value;}});
   spacingRange.addEventListener('input',()=>{spacingOutput.value=spacingRange.value+' px';if(selected){selected.style.paddingTop=spacingRange.value+'px';selected.style.paddingBottom=spacingRange.value+'px';}});
   spacingRange.addEventListener('change',()=>{if(selected)saveHistory();});
   bgColor.addEventListener('change',()=>applyBackground(bgColor.value));
