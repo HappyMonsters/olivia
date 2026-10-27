@@ -14,13 +14,17 @@
   const borderRadiusControl = document.getElementById('borderRadiusControl');
   const propertiesContent = document.getElementById('propertiesContent');
   const emptyProperties = document.getElementById('emptyProperties');
-  let selected = null, contextTarget = null, copiedSection = null, dragSource = null;
+  const imageProperties = document.getElementById('imageProperties');
+  const imageFields = document.getElementById('imageFields');
+  const transparentDragImage = document.createElement('canvas');
+  transparentDragImage.width = transparentDragImage.height = 1;
+  let selected = null, contextTarget = null, copiedSection = null, dragSource = null, dragPreview = null;
   let undoStack = [], redoStack = [];
   let pages = [];
   let activePageId = 'home';
   let pageIdCounter = 1;
-  const names = {hero:'Hero section',logos:'Logo cloud',features:'Features section',testimonials:'Testimonials',pricing:'Pricing section',cta:'Call to action',text:'Text block',footer:'Footer',stats:'Stats',team:'Team',faq:'FAQ',newsletter:'Newsletter'};
-  const icons = {hero:'▤',logos:'◎',features:'▦',testimonials:'❞',pricing:'＄',cta:'↗',text:'T',footer:'▱',stats:'↗',team:'♙',faq:'?',newsletter:'✉'};
+  const names = {hero:'Hero section',logos:'Logo cloud',features:'Features section',testimonials:'Testimonials',pricing:'Pricing section',cta:'Call to action',text:'Text block',footer:'Footer',stats:'Stats',team:'Team',faq:'FAQ',newsletter:'Newsletter',imageShowcase:'Image showcase',gallery:'Gallery'};
+  const icons = {hero:'▤',logos:'◎',features:'▦',testimonials:'❞',pricing:'＄',cta:'↗',text:'T',footer:'▱',stats:'↗',team:'♙',faq:'?',newsletter:'✉',imageShowcase:'▧',gallery:'▦'};
   const sectionTemplates = {
     pricing: `<div class="section-intro"><span class="eyebrow">SIMPLE, TRANSPARENT PRICING</span><h2>Plans that grow<br><em>with your team.</em></h2><p>Choose the right plan for your next big idea.</p></div><div class="feature-grid"><article><h3>Starter</h3><p>For small teams getting started.</p><h2>$19 <small>/ month</small></h2><a>Choose Starter →</a></article><article><h3>Growth</h3><p>For teams ready to scale.</p><h2>$49 <small>/ month</small></h2><a>Choose Growth →</a></article><article><h3>Business</h3><p>For organizations moving fast.</p><h2>$99 <small>/ month</small></h2><a>Choose Business →</a></article></div>`,
     text: `<div class="section-intro"><span class="eyebrow">A LITTLE ABOUT US</span><h2>Good work starts<br><em>with a clear idea.</em></h2><p>Use this section to tell your story. Explain what you do, who you help, and why it matters. Keep it clear, useful, and human.</p></div>`,
@@ -33,7 +37,9 @@
     stats: `<div class="section-intro"><span class="eyebrow">OUR IMPACT</span><h2>Progress you can<br><em>measure.</em></h2></div><div class="stats-grid"><article><strong>2.4k</strong><span>Teams growing with us</span></article><article><strong>98%</strong><span>Customer satisfaction</span></article><article><strong>42</strong><span>Countries represented</span></article><article><strong>24/7</strong><span>Support when it matters</span></article></div>`,
     team: `<div class="section-intro"><span class="eyebrow">THE PEOPLE BEHIND THE WORK</span><h2>Built by a thoughtful<br><em>team.</em></h2><p>Different perspectives, shared care for doing great work.</p></div><div class="team-grid"><article><span class="team-avatar">AM</span><h3>Avery Morgan</h3><p>Creative Director</p></article><article><span class="team-avatar peach">JL</span><h3>Jordan Lee</h3><p>Product Designer</p></article><article><span class="team-avatar mint">RS</span><h3>Riley Shah</h3><p>Engineering Lead</p></article></div>`,
     faq: `<div class="section-intro"><span class="eyebrow">QUESTIONS, ANSWERED</span><h2>Everything you need<br><em>to know.</em></h2></div><div class="faq-list"><details open><summary>How quickly can I get started?<span>+</span></summary><p>Create your workspace in minutes, then invite your team when you are ready.</p></details><details><summary>Can I change plans later?<span>+</span></summary><p>Yes. Move between plans whenever your needs change.</p></details><details><summary>Is there a free trial?<span>+</span></summary><p>Every plan includes time to explore the product before you commit.</p></details></div>`,
-    newsletter: `<div class="newsletter-copy"><span class="eyebrow">STAY IN THE LOOP</span><h2>Useful ideas, once<br><em>a month.</em></h2><p>Thoughtful notes on building better products and teams.</p></div><form class="newsletter-form"><input type="email" placeholder="Your email address" aria-label="Email address"><button type="button" class="primary-pill">Subscribe <span>↗</span></button><small>No spam. Unsubscribe anytime.</small></form>`
+    newsletter: `<div class="newsletter-copy"><span class="eyebrow">STAY IN THE LOOP</span><h2>Useful ideas, once<br><em>a month.</em></h2><p>Thoughtful notes on building better products and teams.</p></div><form class="newsletter-form"><input type="email" placeholder="Your email address" aria-label="Email address"><button type="button" class="primary-pill">Subscribe <span>↗</span></button><small>No spam. Unsubscribe anytime.</small></form>`,
+    imageShowcase: `<div class="image-showcase-copy"><span class="eyebrow">DESIGNED FOR REAL MOMENTUM</span><h2>Bring your best<br><em>ideas to life.</em></h2><p>Build a clear, memorable presence with a flexible system that makes every detail feel considered.</p><button class="primary-pill">Explore the work <span>↗</span></button></div><img src="https://images.unsplash.com/photo-1497366811353-6870744d04b2?auto=format&amp;fit=crop&amp;w=1200&amp;q=85" alt="Modern creative studio workspace">`,
+    gallery: `<div class="section-intro"><span class="eyebrow">A CLOSER LOOK</span><h2>Work made with<br><em>care.</em></h2></div><div class="image-gallery"><img src="https://images.unsplash.com/photo-1497215842964-222b430dc094?auto=format&amp;fit=crop&amp;w=900&amp;q=85" alt="Bright modern office"><img src="https://images.unsplash.com/photo-1497366754035-f200968a6e72?auto=format&amp;fit=crop&amp;w=900&amp;q=85" alt="Collaborative workspace"><img src="https://images.unsplash.com/photo-1517048676732-d65bc937f952?auto=format&amp;fit=crop&amp;w=900&amp;q=85" alt="Team meeting"></div>`
   };
   function showToast(message) {
     toast.textContent = message; toast.classList.add('show');
@@ -51,7 +57,7 @@
       section.innerHTML = `<div class="section-tools"><span class="drag-handle" title="Drag to reorder">⠿</span><span class="section-label">${type.toUpperCase()}</span><button class="more-btn" aria-label="Section actions">•••</button></div>${content}`;
     }
     section.dataset.section = type; section.classList.remove('selected');
-    section.classList.remove('logo-section','features-section','testimonial-section','cta-section','footer-section','stats-section','team-section','faq-section','newsletter-section');
+    section.classList.remove('logo-section','features-section','testimonial-section','cta-section','footer-section','stats-section','team-section','faq-section','newsletter-section','image-showcase-section','gallery-section');
     if(type==='logos') section.classList.add('logo-section');
     if(['features','pricing','text'].includes(type)) section.classList.add('features-section');
     if(type==='testimonials') section.classList.add('testimonial-section');
@@ -61,6 +67,8 @@
     if(type==='team') section.classList.add('team-section');
     if(type==='faq') section.classList.add('faq-section');
     if(type==='newsletter') section.classList.add('newsletter-section');
+    if(type==='imageShowcase') section.classList.add('image-showcase-section');
+    if(type==='gallery') section.classList.add('gallery-section');
     const label = section.querySelector('.section-label'); if(label) label.textContent = type.toUpperCase();
     return section;
   }
@@ -131,6 +139,35 @@
     if (selected) selected.classList.add('selected');
     renderLayers(); updateProperties();
   }
+  function clearSelection() {
+    if (!selected) return;
+    selected.classList.remove('selected'); selected = null;
+    hideContext(); renderLayers(); updateProperties();
+  }
+  function startDragPreview(section, x, y) {
+    const rect = section.getBoundingClientRect();
+    dragPreview = section.cloneNode(true);
+    dragPreview.classList.remove('selected','dragging','drop-before','drop-after');
+    dragPreview.classList.add('drag-preview');
+    dragPreview.style.width = rect.width + 'px';
+    document.body.appendChild(dragPreview);
+    moveDragPreview(x, y);
+  }
+  function moveDragPreview(x, y) {
+    if (!dragPreview || (!x && !y)) return;
+    dragPreview.style.left = (x + 18) + 'px';
+    dragPreview.style.top = (y + 18) + 'px';
+  }
+  function finishDragPreview(section) {
+    if (!dragPreview) return;
+    const rect = section.getBoundingClientRect();
+    dragPreview.classList.add('settling');
+    dragPreview.style.left = rect.left + 'px';
+    dragPreview.style.top = rect.top + 'px';
+    dragPreview.style.opacity = '0';
+    const preview = dragPreview; dragPreview = null;
+    setTimeout(() => preview.remove(), 180);
+  }
   function bindSections() {
     sections().forEach(section => {
       section.draggable = false;
@@ -143,19 +180,28 @@
       }
       section.addEventListener('dragstart', e => {
         if (!section.draggable) { e.preventDefault(); return; }
+        saveHistory();
         dragSource = section; section.classList.add('dragging'); e.dataTransfer.effectAllowed = 'move'; e.dataTransfer.setData('text/plain','section');
+        e.dataTransfer.setDragImage(transparentDragImage, 0, 0);
+        startDragPreview(section, e.clientX, e.clientY);
       });
-      section.addEventListener('dragend', () => { section.classList.remove('dragging'); section.draggable = false; dragSource = null; sections().forEach(s => s.classList.remove('drop-before','drop-after')); });
+      section.addEventListener('drag', e => moveDragPreview(e.clientX, e.clientY));
+      section.addEventListener('dragend', () => { section.classList.remove('dragging'); section.draggable = false; finishDragPreview(section); dragSource = null; sections().forEach(s => s.classList.remove('drop-before','drop-after')); renderLayers(); });
       section.addEventListener('dragover', e => {
         if (!dragSource || dragSource === section) return;
         e.preventDefault(); e.dataTransfer.dropEffect = 'move';
+        moveDragPreview(e.clientX, e.clientY);
+        const rect = section.getBoundingClientRect();
+        const after = e.clientY > rect.top + rect.height / 2;
+        sections().forEach(s => s.classList.remove('drop-before','drop-after'));
+        section.classList.add(after ? 'drop-after' : 'drop-before');
+        if (after ? dragSource.previousElementSibling !== section : dragSource.nextElementSibling !== section) {
+          canvas.insertBefore(dragSource, after ? section.nextSibling : section);
+        }
       });
       section.addEventListener('drop', e => {
         if (!dragSource || dragSource === section) return;
-        e.preventDefault(); saveHistory();
-        const rect = section.getBoundingClientRect();
-        const after = e.clientY > rect.top + rect.height / 2;
-        canvas.insertBefore(dragSource, after ? section.nextSibling : section);
+        e.preventDefault();
         renderLayers(); updateCount(); showToast('Section order updated');
       });
       const more = section.querySelector('.more-btn');
@@ -187,7 +233,7 @@
   }
   function updateCount() { document.getElementById('sectionCount').textContent = `${sections().length} sections`; }
   function updateProperties() {
-    if (!selected) { selectedName.textContent='No section selected'; propertiesContent.classList.add('hidden'); emptyProperties.classList.remove('hidden'); return; }
+    if (!selected) { selectedName.textContent='No section selected'; propertiesContent.classList.add('hidden'); emptyProperties.classList.remove('hidden'); imageProperties.classList.add('hidden'); return; }
     propertiesContent.classList.remove('hidden'); emptyProperties.classList.add('hidden');
     const type = selected.dataset.section; selectedName.textContent = names[type] || type;
     labelInput.value = (selected.querySelector('.section-label')?.textContent || type.toUpperCase()).trim();
@@ -199,6 +245,21 @@
     if (bg && bg.startsWith('rgb')) { const m = bg.match(/\d+/g); if (m) setBackgroundControls('#'+m.slice(0,3).map(n=>Number(n).toString(16).padStart(2,'0')).join('').toUpperCase()); }
     const radius = parseFloat(getComputedStyle(selected).borderTopLeftRadius) || 0;
     setRadiusControl(radius);
+    updateImageProperties();
+  }
+  function updateImageProperties() {
+    imageFields.replaceChildren();
+    const images = selected ? [...selected.querySelectorAll('img')] : [];
+    imageProperties.classList.toggle('hidden', images.length === 0);
+    images.forEach((image, index) => {
+      const urlLabel = document.createElement('label'); urlLabel.className = 'field-label'; urlLabel.textContent = `Image ${index + 1} URL`;
+      const url = document.createElement('input'); url.className = 'text-input image-url-input'; url.type = 'url'; url.value = image.getAttribute('src') || ''; url.setAttribute('aria-label', `Image ${index + 1} URL`);
+      url.addEventListener('change', () => { const value = url.value.trim(); if (!value) { showToast('Enter an image URL'); return; } saveHistory(); image.src = value; });
+      const altLabel = document.createElement('label'); altLabel.className = 'field-label'; altLabel.textContent = `Image ${index + 1} description`;
+      const alt = document.createElement('input'); alt.className = 'text-input'; alt.value = image.alt; alt.setAttribute('aria-label', `Image ${index + 1} description`);
+      alt.addEventListener('change', () => { saveHistory(); image.alt = alt.value; });
+      imageFields.append(urlLabel, url, altLabel, alt);
+    });
   }
   function setBackgroundControls(color) {
     bgColor.value = color; bgColorPicker.value = color;
@@ -329,6 +390,11 @@
   }
   document.querySelectorAll('.apply-template').forEach(button => button.addEventListener('click', () => applyHomeTemplate(button.dataset.template)));
 
+  document.addEventListener('pointerdown', event => {
+    if (!selected || event.target.closest('.editable-section, #propertiesContent, .context-menu')) return;
+    if (event.target.closest('.left-panel, .topbar, .canvas-toolbar, .canvas-bottom, .right-heading, .canvas-scroll')) clearSelection();
+  });
+
   document.querySelectorAll('.component-card').forEach(card=>card.addEventListener('click',()=>{
     const type=card.dataset.component; saveHistory();
     const section=document.createElement('section'); section.className='editable-section'; section.dataset.section=type; section.tabIndex=0;
@@ -343,6 +409,8 @@
     if(type==='team') section.classList.add('team-section');
     if(type==='faq') section.classList.add('faq-section');
     if(type==='newsletter') section.classList.add('newsletter-section');
+    if(type==='imageShowcase') section.classList.add('image-showcase-section');
+    if(type==='gallery') section.classList.add('gallery-section');
     canvas.appendChild(section); bindSections(); selectSection(section); updateCount(); section.scrollIntoView({behavior:'smooth',block:'center'}); showToast(`${names[type]||type} added`);
   }));
   document.getElementById('componentSearch').addEventListener('input',e=>{
