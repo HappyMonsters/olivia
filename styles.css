@@ -30,3 +30,10 @@
 /* Minimal Agency homepage template */
 #siteCanvas[data-home-template="minimal"]>.editable-section{padding:35px 8%;}.minimal-hero{text-align:center;min-height:300px;padding:22px 4% 10px}.minimal-hero .eyebrow{justify-content:center}.minimal-hero p{margin:0 auto 17px}.minimal-hero .hero-buttons{justify-content:center}.minimal-hero-note{display:flex;justify-content:center;gap:24px;border-top:1px solid #e9e8f0;margin:30px auto 0;padding-top:14px;max-width:460px}.minimal-hero-note span{font-size:8px;letter-spacing:1px;color:#858697}.minimal-services-section{background:#faf9fc}.minimal-services{display:grid;grid-template-columns:.8fr 1.2fr;gap:28px}.minimal-services .section-intro{text-align:left}.service-list article{display:grid;grid-template-columns:25px 1fr 18px;gap:10px;align-items:start;padding:14px 0;border-bottom:1px solid #e8e7ef}.service-list article>span{font-size:9px;color:#8071e8;padding-top:3px}.service-list h3{font-size:12px;margin:0 0 5px}.service-list p{font-size:10px;color:#858697;line-height:1.6;margin:0}.service-list article>b{color:#7464e5;font-size:13px}.minimal-note{max-width:510px;margin:auto}.minimal-note .eyebrow{color:#7565e4}.minimal-note p{font-size:11px;line-height:1.7;color:#858697;max-width:350px}
 @media(max-width:900px){.portfolio-hero,.startup-hero,.minimal-services{grid-template-columns:1fr}.portfolio-art{max-width:360px}.project-grid{grid-template-columns:1fr 1fr}.startup-dashboard{max-width:360px}.minimal-services{gap:10px}}
+
+/* Keep the sidebar roomy enough for template cards and tab labels. */
+.app{grid-template-columns:340px minmax(450px,1fr) 286px}
+.panel-tabs{overflow-x:auto;scrollbar-width:none}
+.panel-tabs::-webkit-scrollbar{display:none}
+@media(max-width:1100px){.app{grid-template-columns:290px minmax(380px,1fr) 255px}}
+@media(max-width:850px){.app{grid-template-columns:250px minmax(350px,1fr)}}
